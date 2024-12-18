@@ -10,13 +10,17 @@ const MenuScreen: React.FC<Props> = ({navigation}) => {
     navigation.navigate('List');
   };
 
+  const navigateToListBottomSheet = () => {
+    navigation.navigate('BottomSheet');
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={navigateToListExample}>
-        <Text style={styles.title}>1. To do</Text>
+        <Text style={styles.title}>1. List</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={navigateToListExample}>
-        <Text style={styles.title}>2. List</Text>
+      <TouchableOpacity onPress={navigateToListBottomSheet}>
+        <Text style={styles.title}>2. BottomSheet</Text>
       </TouchableOpacity>
     </View>
   );
