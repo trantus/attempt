@@ -46,18 +46,15 @@ const BottomSheet = forwardRef<BottomSheetRef>((_props, ref) => {
             onMoveShouldSetPanResponder: (_, gestureState) =>
                 Math.abs(gestureState.dy) > 5,
             onPanResponderMove: (_, gestureState) => {
-                // Current position: start from 0 (open state) and move downwards
                 const newVal = gestureState.dy;
-                // Clamp between 0 (open) and sheetHeight (closed)
+                // Clamp between 0 (fully open) and sheetHeight (fully closed)
                 const clampedVal = Math.min(Math.max(0, newVal), sheetHeight);
                 translateY.setValue(clampedVal);
             },
             onPanResponderRelease: (_, gestureState) => {
-                // If dragged more than half the sheetHeight downward, close it
                 if (gestureState.dy > sheetHeight / 2) {
                     ref && (ref as React.RefObject<BottomSheetRef>)?.current?.close();
                 } else {
-                    // Snap back to open if not far enough down
                     Animated.spring(translateY, {
                         toValue: 0,
                         useNativeDriver: true,
@@ -69,15 +66,22 @@ const BottomSheet = forwardRef<BottomSheetRef>((_props, ref) => {
 
     if (!visible) return null;
 
+    const backdropOpacity = translateY.interpolate({
+        inputRange: [0, sheetHeight],
+        outputRange: [1, 0],
+    });
+
     return (
         <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
-            {/* Backdrop: closes the sheet on press */}
-            <Pressable
-                style={styles.backdrop}
-                onPress={() =>
-                    ref && (ref as React.RefObject<BottomSheetRef>)?.current?.close()
-                }
-            />
+            {/* Animated backdrop that fades out as the sheet is dragged down */}
+            <Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]}>
+                <Pressable
+                    style={StyleSheet.absoluteFill}
+                    onPress={() =>
+                        ref && (ref as React.RefObject<BottomSheetRef>)?.current?.close()
+                    }
+                />
+            </Animated.View>
 
             <Animated.View
                 style={[
@@ -87,7 +91,6 @@ const BottomSheet = forwardRef<BottomSheetRef>((_props, ref) => {
                 {...panResponder.panHandlers}
             >
                 <View style={styles.handle} />
-                {/* Chip row or any content at the top */}
                 <View style={styles.chipRow}>
                     <View style={styles.chip} />
                     <View style={styles.chip} />
@@ -100,7 +103,7 @@ const BottomSheet = forwardRef<BottomSheetRef>((_props, ref) => {
 
 const styles = StyleSheet.create({
     backdrop: {
-        flex: 1,
+        ...StyleSheet.absoluteFillObject,
         backgroundColor: 'rgba(0,0,0,0.5)',
     },
     sheetContainer: {
