@@ -8,9 +8,9 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../types/navigation';
+import {RootStackParamList} from '../../types/navigation.ts';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'List'>;
 
 interface Item {
   id: number;
@@ -75,7 +75,17 @@ const HomeScreen: React.FC<Props> = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <Text>Home Many items uploaded: {data.length}</Text>
+      <Text
+        style={{
+          padding: 12,
+          fontSize: 18,
+          borderBottomColor: 'black',
+          borderBottomWidth: 1,
+          borderTopColor: 'black',
+          borderTopWidth: 1,
+        }}>
+        Home Many items downloaded: {data.length}
+      </Text>
       {loading && data.length === 0 ? (
         <ActivityIndicator size="large" style={{marginTop: 50}} />
       ) : (

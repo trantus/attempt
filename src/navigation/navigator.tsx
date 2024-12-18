@@ -1,8 +1,10 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import HomeScreen from '../screens/HomeScreen';
-import DetailScreen from '../screens/DetailScreen';
+
 import {RootStackParamList} from '../types/navigation';
+import DetailScreen from '../screens/List/Detail.screen.tsx';
+import HomeScreen from '../screens/List/Home.screen.tsx';
+import MenuScreen from '../screens/Menu.screen.tsx';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -10,7 +12,12 @@ const AppNavigator = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="Home"
+        name="Menu"
+        component={MenuScreen}
+        options={{title: 'Detail'}}
+      />
+      <Stack.Screen
+        name="List"
         component={HomeScreen}
         options={{title: 'Items List'}}
       />
