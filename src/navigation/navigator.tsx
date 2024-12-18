@@ -6,6 +6,7 @@ import DetailScreen from '../screens/List/Detail.screen.tsx';
 import HomeScreen from '../screens/List/Home.screen.tsx';
 import MenuScreen from '../screens/Menu.screen.tsx';
 import BottomSheetScreen from '../screens/BottomSheet.screen.tsx';
+import PerformanceScreen from '../screens/PerformanceList/PerformanceList.screen.tsx';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -21,7 +22,12 @@ const AppNavigator = () => {
       <Stack.Screen
         name="BottomSheet"
         component={BottomSheetScreen}
-        options={{title: 'Detail'}}
+        options={{title: 'Bottom Sheet'}}
+      />
+      <Stack.Screen
+        name="PerformanceList"
+        component={PerformanceScreen}
+        options={{title: 'PerformanceList'}}
       />
       <Stack.Screen
         name="List"

@@ -3,4 +3,5 @@ export type RootStackParamList = {
   List: undefined;
   Detail: {id: number} | undefined;
   BottomSheet: undefined;
+  PerformanceList: undefined;
 };

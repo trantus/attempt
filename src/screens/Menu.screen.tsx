@@ -14,13 +14,20 @@ const MenuScreen: React.FC<Props> = ({navigation}) => {
     navigation.navigate('BottomSheet');
   };
 
+  const navigateToPerformanceList = () => {
+    navigation.navigate('PerformanceList');
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={navigateToListExample}>
-        <Text style={styles.title}>1. List</Text>
+        <Text style={styles.title}>1. List load more</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={navigateToListBottomSheet}>
         <Text style={styles.title}>2. BottomSheet</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={navigateToPerformanceList}>
+        <Text style={styles.title}>3. Performance</Text>
       </TouchableOpacity>
     </View>
   );
