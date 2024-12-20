@@ -1,67 +1,48 @@
-import React, {useEffect, useState, useCallback} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  FlatList,
-  TouchableOpacity,
-} from 'react-native';
+/**
+ * TASKS TO BE IMPLEMENTED BY THE CANDIDATE:
+ * 1. Fetch and display a paginated list of items from the remote API:
+ *    URL: https://jsonplaceholder.typicode.com/posts?_page={pageNum}&_limit=10
+ * 2. Implement "Load More" functionality when the user scrolls near the bottom.
+ * 3. Navigate to a detail screen showing more info about the selected item when tapped.
+ * 4. Use ActivityIndicator to show loading state
+ *
+ */
+
+import React, {useCallback, useState} from 'react';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../../types/navigation.ts';
+import {RootStackParamList} from '../../types/navigation'; // Adjust import as needed
 
 type Props = NativeStackScreenProps<RootStackParamList, 'List'>;
 
 interface Item {
   id: number;
   title: string;
-  // Add other fields as needed from your chosen API
+  // Add other fields as needed
 }
 
 const HomeScreen: React.FC<Props> = ({navigation}) => {
   const [data, setData] = useState<Item[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [page, setPage] = useState<number>(1);
-  const [refreshing, setRefreshing] = useState<boolean>(false);
 
+  // https://jsonplaceholder.typicode.com/posts?_page={pageNum}&_limit=10
   const fetchData = useCallback(async (pageNum: number) => {
-    setLoading(true);
-    try {
-      // Replace the URL below with a real API endpoint
-      const response = await fetch(
-        `https://jsonplaceholder.typicode.com/posts?_page=${pageNum}&_limit=10`,
-      );
-      const items = await response.json();
-      if (pageNum === 1) {
-        setData(items);
-      } else {
-        setData(prev => [...prev, ...items]);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
+    // Candidate to implement
   }, []);
 
-  useEffect(() => {
-    fetchData(page);
-  }, [fetchData, page]);
-
   const onRefresh = () => {
-    setRefreshing(true);
-    setPage(1);
+    // Candidate to implement pull-to-refresh logic
   };
 
   const loadMore = () => {
-    // Add logic to prevent loading more if no more data is available
-    setPage(prev => prev + 1);
+    // Candidate to implement load-more logic
   };
 
   const renderItem = ({item}: {item: Item}) => (
     <TouchableOpacity
-      onPress={() => navigation.navigate('Detail', {id: item.id})}>
+      onPress={() => {
+        // Candidate to navigate to 'Detail' screen with item.id
+      }}>
       <View style={styles.itemContainer}>
         <Text style={styles.itemTitle}>{item.title}</Text>
       </View>
@@ -69,37 +50,20 @@ const HomeScreen: React.FC<Props> = ({navigation}) => {
   );
 
   const renderFooter = () => {
-    if (!loading) return null;
-    return <ActivityIndicator style={{marginVertical: 20}} />;
+    // Candidate to return footer loading indicator if needed
+    return null;
   };
 
   return (
     <View style={styles.container}>
-      <Text
-        style={{
-          padding: 12,
-          fontSize: 18,
-          borderBottomColor: 'black',
-          borderBottomWidth: 1,
-          borderTopColor: 'black',
-          borderTopWidth: 1,
-        }}>
-        Home Many items downloaded: {data.length}
-      </Text>
-      {loading && data.length === 0 ? (
-        <ActivityIndicator size="large" style={{marginTop: 50}} />
-      ) : (
+      <Text style={styles.header}>Home - Items Loaded: {data.length}</Text>
+
         <FlatList
           data={data}
           keyExtractor={item => item.id.toString()}
           renderItem={renderItem}
-          onRefresh={onRefresh}
-          refreshing={refreshing}
-          onEndReached={loadMore}
-          onEndReachedThreshold={0.5}
           ListFooterComponent={renderFooter}
         />
-      )}
     </View>
   );
 };
@@ -110,6 +74,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  header: {
+    padding: 12,
+    fontSize: 18,
+    borderBottomColor: 'black',
+    borderBottomWidth: 1,
+    borderTopColor: 'black',
+    borderTopWidth: 1,
   },
   itemContainer: {
     padding: 15,

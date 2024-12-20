@@ -1,20 +1,19 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {
-  AppState,
-  AppStateStatus,
-  FlatList,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {useDebouncedValue} from './useDebounceValue.tsx';
+import React, {useMemo, useState} from 'react';
+import {FlatList, StyleSheet, Text, TextInput, View} from 'react-native';
 
 const ITEM_HEIGHT = 50;
 const DATA_SIZE = 1000;
+
+// ===== 1 =====
+// Implement performance optimizations for smooth scrolling and minimal re-renders.
+
+// ===== 2 =====
+// Add a floating “Scroll to Top” button that becomes visible when the user
+// has scrolled down a certain distance,
+// and use forwardRef and imperative methods on the list to programmatically scroll.
+
+// ===== 3 =====
+// Implement debouncing so the filter doesn’t re-run on every keystroke.
 
 // Mock large dataset
 const initialData = Array.from({length: DATA_SIZE}, (_, i) => ({
@@ -25,61 +24,13 @@ const initialData = Array.from({length: DATA_SIZE}, (_, i) => ({
 const PerformanceScreen = React.forwardRef((props, ref) => {
   const [data, setData] = useState(initialData);
   const [searchQuery, setSearchQuery] = useState('');
-  const debouncedQuery = useDebouncedValue(searchQuery, 300);
-  const flatListRef = useRef<FlatList>(null);
-  const [showScrollToTop, setShowScrollToTop] = useState(false);
 
   const filteredData = useMemo(() => {
-    if (!debouncedQuery) return data;
+    if (!searchQuery) return data;
     return data.filter(item =>
-      item.title.toLowerCase().includes(debouncedQuery.toLowerCase()),
+      item.title.toLowerCase().includes(searchQuery.toLowerCase()),
     );
-  }, [data, debouncedQuery]);
-
-  React.useImperativeHandle(ref, () => ({
-    scrollToTop: () => {
-      flatListRef.current?.scrollToOffset({offset: 0, animated: true});
-    },
-  }));
-
-  // Show/hide scroll-to-top button based on scroll position
-  const onScroll = useCallback(
-    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const offsetY = event.nativeEvent.contentOffset.y;
-      setShowScrollToTop(offsetY > 300);
-    },
-    [],
-  );
-
-  // AppState handling (Bonus)
-  useEffect(() => {
-    const handleAppStateChange = (nextAppState: AppStateStatus) => {
-      if (nextAppState === 'active') {
-        // Refresh or update data if necessary
-        // e.g., setData(updatedDataFromServer);
-      }
-    };
-
-    const subscription = AppState.addEventListener(
-      'change',
-      handleAppStateChange,
-    );
-    return () => subscription.remove();
-  }, []);
-
-  const renderItem = useCallback(
-    ({item}: {item: any}) => <MemoizedListItem title={item.title} />,
-    [],
-  );
-
-  const getItemLayout = useCallback(
-    (_: any, index: number) => ({
-      length: ITEM_HEIGHT,
-      offset: ITEM_HEIGHT * index,
-      index,
-    }),
-    [],
-  );
+  }, [data, searchQuery]);
 
   return (
     <View style={styles.container}>
@@ -93,28 +44,12 @@ const PerformanceScreen = React.forwardRef((props, ref) => {
 
       {/* Large List */}
       <FlatList
-        ref={flatListRef}
         data={filteredData}
         keyExtractor={item => item.id}
-        renderItem={renderItem}
-        getItemLayout={getItemLayout}
-        initialNumToRender={20}
-        maxToRenderPerBatch={20}
-        windowSize={10}
-        onScroll={onScroll}
-        scrollEventThrottle={16}
+        renderItem={({item}: {item: any}) => <ListItem title={item.title} />}
       />
 
       {/* Scroll to Top Button */}
-      {showScrollToTop && (
-        <TouchableOpacity
-          style={styles.scrollToTopButton}
-          onPress={() =>
-            flatListRef.current?.scrollToOffset({offset: 0, animated: true})
-          }>
-          <Text style={{color: '#fff'}}>Top</Text>
-        </TouchableOpacity>
-      )}
     </View>
   );
 });
@@ -126,9 +61,6 @@ const ListItem = ({title}: {title: string}) => {
     </View>
   );
 };
-
-// Memoized to prevent unnecessary re-renders
-const MemoizedListItem = React.memo(ListItem);
 
 const styles = StyleSheet.create({
   container: {
